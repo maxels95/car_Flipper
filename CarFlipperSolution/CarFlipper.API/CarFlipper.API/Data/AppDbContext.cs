@@ -11,6 +11,7 @@ namespace CarFlipper.API.Data
 
         public DbSet<Ad> Ads { get; set; }
         public DbSet<PriceHistory> PriceHistories { get; set; }
+        public DbSet<MarketPrice> MarketPrices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

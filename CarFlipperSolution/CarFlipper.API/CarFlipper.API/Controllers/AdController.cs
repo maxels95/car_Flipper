@@ -12,77 +12,48 @@ namespace CarFlipper.Controllers
     public class CarController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IAdMappingService _mappingService;
 
-        public CarController(AppDbContext context)
+        public CarController(AppDbContext context, IAdMappingService mappingService)
         {
             _context = context;
+            _mappingService = mappingService;
         }
 
         [HttpPost]
         public async Task<IActionResult> AddCars([FromBody] List<AdDTO> ads)
         {
             if (ads == null || ads.Count == 0)
-                return BadRequest("No ads received.");
+        return BadRequest("No ads received.");
 
-            // Hämta existerande AdId:n från databasen
-            var existingIds = await _context.Ads
-                .Where(a => ads.Select(x => x.AdId).Contains(a.AdId))
-                .Select(a => a.AdId)
-                .ToListAsync();
+        var existingIds = await _context.Ads
+            .Where(a => ads.Select(x => x.AdId).Contains(a.AdId))
+            .Select(a => a.AdId)
+            .ToListAsync();
 
-            // Filtrera bort annonser som redan finns
-            var newAdsDTO = ads.Where(a => !existingIds.Contains(a.AdId)).ToList();
-            var newAds = new List<Ad>();
+        var newAdsDTO = ads.Where(a => !existingIds.Contains(a.AdId)).ToList();
 
-            foreach (AdDTO ad in newAdsDTO)
-            {
-                var parser = new CarParserService();
-                var (make, model) = parser.ParseMakeAndModel(ad.Title);
-                if (make == null || model == null)
-                {
-                    (make, model) = parser.ParseMakeAndModel(ad.Description);
-                }
+        // Kör alla asynkrona mappningar
+        var mappedAds = await Task.WhenAll(newAdsDTO.Select(dto => _mappingService.MapToAd(dto)));
 
-                try
-                    {
-                        Ad newAd = new Ad();
-                        newAd.AdId = ad.AdId;
-                        newAd.Title = ad.Title;
-                        newAd.Make = make;
-                        newAd.Model = model;
-                        newAd.Url = ad.Url;
-                        newAd.Source = ad.Source;
+        // Filtrera bort null
+        var newAds = mappedAds
+            .Where(ad => ad != null)
+            .ToList()!; // "!" för att kompilatorn inte ska klaga på null trots filtreringen
 
-                        if (Enum.TryParse<Region>(ad.Region, out var parsedRegion))
-                        {
-                            newAd.Region = parsedRegion;
-                        }
+        if (newAds.Count > 0)
+        {
+            await _context.Ads.AddRangeAsync(newAds);
+            await _context.SaveChangesAsync();
+        }
 
-                        newAd.Price = ad.Price;
-                        newAd.Milage = ad.Milage;
-                        newAd.ModelYear = ad.ModelYear;
-                        newAd.Fuel = ad.Fuel;
-                        newAd.Gearbox = ad.Gearbox;
-                        newAd.CreatedAt = ad.CreatedAt;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Annons kunde ej läggas till: {ex.Message}");
-                    }
-            }
 
-            if (newAds.Count > 0)
-                {
-                    _context.Ads.AddRange(newAds);
-                    await _context.SaveChangesAsync();
-                }
-
-            return Ok(new
-            {
-                Added = newAds.Count,
-                Skipped = ads.Count - newAds.Count,
-                Message = $"{newAds.Count} cars added, {ads.Count - newAds.Count} skipped as duplicates."
-            });
+        return Ok(new
+        {
+            Added = newAds.Count,
+            Skipped = ads.Count - newAds.Count,
+            Message = $"{newAds.Count} cars added, {ads.Count - newAds.Count} skipped as duplicates or invalid."
+        });
         }
 
 

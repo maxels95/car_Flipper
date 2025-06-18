@@ -33,22 +33,16 @@ namespace CarFlipper.API.Models
         public string Source { get; set; } = string.Empty; // t.ex. "Blocket", "Facebook"
 
         public int? RegionId { get; set; }
-        [NotMapped]
-        public Region? Region
-        {
-            get => (Region)RegionId;
-            set => RegionId = (int)value;
-        }
 
         public string? Location { get; set; }
 
-        public int? Price { get; set; }
-        public int? Milage { get; set; }
-        public int? ModelYear { get; set; }
+        public int Price { get; set; }
+        public int Milage { get; set; }
+        public int ModelYear { get; set; }
         public string? Fuel { get; set; }
         public string? Gearbox { get; set; }
         public int? EstimatedMarketValue { get; set; }
-        public bool? IsUnderpriced { get; set; }
+        public bool IsUnderpriced { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? RemovedAt { get; set; } = DateTime.UtcNow;
         public bool Deprecated = false;
@@ -64,13 +58,13 @@ namespace CarFlipper.API.Models
         string url,
         string source,
         string? location,
-        int? price,
-        int? milage,
-        int? modelYear,
+        int price,
+        int milage,
+        int modelYear,
         string? fuel,
         string? gearbox,
         int? estimatedMarketValue,
-        bool? isUnderpriced,
+        bool isUnderpriced,
         DateTime createdAt,
         DateTime removedAt,
         bool deprecated)
