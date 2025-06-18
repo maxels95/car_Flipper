@@ -1,3 +1,5 @@
+using CarFlipper.API.Models;
+
 public class MarketPrice
 {
     public int Id { get; set; }
@@ -17,4 +19,5 @@ public class MarketPrice
     public int SampleSize { get; set; }  // antal annonser som beräkningen baseras på
 
     public DateTime UpdatedAt { get; set; }
+    public ICollection<Ad> Ads { get; set; } = new List<Ad>();
 }

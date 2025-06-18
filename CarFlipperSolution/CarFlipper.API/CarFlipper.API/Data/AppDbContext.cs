@@ -17,10 +17,11 @@ namespace CarFlipper.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Exempel: Förhindra att samma annons-URL läggs till flera gånger
             modelBuilder.Entity<Ad>()
-                .HasIndex(a => a.Url)
-                .IsUnique();
+                .HasOne(ad => ad.MarketPrice)
+                .WithMany(mp => mp.Ads)
+                .HasForeignKey(ad => ad.MarketPriceId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

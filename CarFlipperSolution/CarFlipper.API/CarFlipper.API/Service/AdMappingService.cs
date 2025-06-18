@@ -50,7 +50,7 @@ public class AdMappingService : IAdMappingService
             };
 
             var marketPrice = await _marketPriceService.UpdateOrCreateMarketPriceAsync(ad);
-            ad.EstimatedMarketValue = marketPrice.EstimatedPrice;
+            ad.MarketPriceId = marketPrice.Id;
 
             if ((ad.Price + 10000) < marketPrice.EstimatedPrice)
                 {
