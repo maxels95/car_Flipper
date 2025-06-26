@@ -45,7 +45,7 @@ namespace CarFlipper.API.Models
         public MarketPrice? MarketPrice { get; set; }
         public bool IsUnderpriced { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? RemovedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? RemovedAt { get; set; }
         public bool Deprecated = false;
 
         public Ad()

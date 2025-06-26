@@ -10,9 +10,9 @@ public class AdMappingService : IAdMappingService
     private readonly IMarketPriceService _marketPriceService;
     private readonly AppDbContext _context;
 
-    public AdMappingService(AppDbContext context, IMarketPriceService marketPriceService)
+    public AdMappingService(AppDbContext context, IMarketPriceService marketPriceService, CarParserService parser)
     {
-        _parser = new CarParserService();
+        _parser = parser;
         _marketPriceService = marketPriceService;
         _context = context;
     }
@@ -35,6 +35,7 @@ public class AdMappingService : IAdMappingService
             {
                 AdId = dto.AdId,
                 Title = dto.Title,
+                Description = dto.Description,
                 Make = make,
                 Model = model,
                 Url = dto.Url,

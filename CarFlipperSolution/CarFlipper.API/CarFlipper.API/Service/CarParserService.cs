@@ -1,69 +1,73 @@
 using System.Text.Json;
 
 public class CarParserService
-{
-    private readonly Dictionary<string, List<string>> _carData;
-    private readonly Dictionary<string, string> _modelToMake;
-
-    public CarParserService(string jsonPath = "Data/car-list.json")
     {
-        if (!File.Exists(jsonPath))
-            throw new FileNotFoundException("Hittar inte car-list.json");
+        private Dictionary<string, List<string>> _carData = new();
+        private Dictionary<string, string> _modelToMake = new();
 
-        var json = File.ReadAllText(jsonPath);
-
-        _carData = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json, new JsonSerializerOptions
+        public void Load(string jsonPath)
         {
-            PropertyNameCaseInsensitive = true
-        }) ?? new();
+            if (!File.Exists(jsonPath)) return;
 
-        // Bygg en uppslagslista från modell till märke (enklare reverse lookup)
-        _modelToMake = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var json = File.ReadAllText(jsonPath);
 
-        foreach (var (make, models) in _carData)
-        {
-            foreach (var model in models)
+            try
             {
-                if (!_modelToMake.ContainsKey(model))
-                    _modelToMake[model] = make;
+                var list = JsonSerializer.Deserialize<List<CarBrandModels>>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                _carData = list!.ToDictionary(
+                    x => x.Brand,
+                    x => x.Models,
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+                _modelToMake = _carData
+                    .SelectMany(kvp => kvp.Value.Select(model => new { Make = kvp.Key, Model = model }))
+                    .ToDictionary(x => x.Model, x => x.Make, StringComparer.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Kunde inte ladda car-list.json: {ex.Message}");
+                _carData = new();
+                _modelToMake = new();
             }
         }
-    }
+
 
     public (string? Make, string? Model) ParseMakeAndModel(string title)
     {
-        if (string.IsNullOrWhiteSpace(title))
+        if (string.IsNullOrWhiteSpace(title) || _carData.Count == 0)
             return (null, null);
 
-        title = title.ToLower();
+        var lowerTitle = title.ToLower();
 
-        // Försök hitta make och model i samma körning
+        // Matcha make först
         foreach (var make in _carData.Keys)
         {
-            if (title.Contains(make.ToLower()))
+            if (lowerTitle.Contains(make.ToLower()))
             {
                 foreach (var model in _carData[make])
                 {
-                    if (title.Contains(model.ToLower()))
-                    {
+                    if (lowerTitle.Contains(model.ToLower()))
                         return (make, model);
-                    }
                 }
-
-                return (make, null); // märke hittad men ingen modell
+                return (make, null);
             }
         }
 
-        // Om make inte hittades – försök hitta modell och härleda märke
+        // Om make inte hittades, försök hitta modell och mappa till make
         foreach (var model in _modelToMake.Keys)
         {
-            if (title.Contains(model.ToLower()))
+            if (lowerTitle.Contains(model.ToLower()))
             {
                 var make = _modelToMake[model];
                 return (make, model);
             }
         }
 
-        return (null, null); // ingenting hittat
+        return (null, null);
     }
 }

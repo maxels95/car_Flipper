@@ -29,10 +29,11 @@ public class MarketPriceService : IMarketPriceService
             mp.MilageTo == milageRange.End
         );
 
-        if (existing != null)
+        if (existing != null && (ad.Price + 10000) < existing.EstimatedPrice)
         {
             existing.EstimatedPrice = ((existing.EstimatedPrice * existing.SampleSize) + ad.Price) / (existing.SampleSize + 1);
             existing.SampleSize++;
+            existing.UpdatedAt = DateTime.Now.ToUniversalTime();
         }
         else
         {
@@ -41,6 +42,7 @@ public class MarketPriceService : IMarketPriceService
                 Make = ad.Make,
                 Model = ad.Model,
                 Fuel = ad.Fuel,
+                Gearbox = ad.Gearbox,
                 ModelYearFrom = yearRange.Start,
                 ModelYearTo = yearRange.End,
                 MilageFrom = milageRange.Start,
@@ -68,21 +70,26 @@ public class MarketPriceService : IMarketPriceService
     }
 
     private static readonly List<(int Start, int End)> YearRanges = new()
-{
-    (1990, 1991),
-    (1992, 1993),
-    (1996, 1995),
-    (1996, 1997),
-    (2008, 2009),
-    (2010, 2011),
-    (2012, 2013),
-    (2014, 2015),
-    (2016, 2017),
-    (2018, 2019),
-    (2020, 2021),
-    (2022, 2023),
-    (2024, 2025),
-};
+    {
+        (1990, 1991),
+        (1992, 1993),
+        (1994, 1995),
+        (1996, 1997),
+        (1998, 1999),
+        (2000, 2001),
+        (2002, 2003),
+        (2004, 2005),
+        (2006, 2007),
+        (2008, 2009),
+        (2010, 2011),
+        (2012, 2013),
+        (2014, 2015),
+        (2016, 2017),
+        (2018, 2019),
+        (2020, 2021),
+        (2022, 2023),
+        (2024, 2025),
+    };
 
 private static readonly List<(int Start, int End)> MilageRanges = new()
 {

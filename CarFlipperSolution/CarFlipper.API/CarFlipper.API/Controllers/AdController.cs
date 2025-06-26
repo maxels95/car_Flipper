@@ -69,7 +69,8 @@ namespace CarFlipper.Controllers
             [FromQuery] int? maxPrice,
             [FromQuery] string? gearbox,
             [FromQuery] string? fuel,
-            [FromQuery] string? region)
+            [FromQuery] string? region,
+            [FromQuery] bool? IsUnderpriced)
         {
             var query = _context.Ads.AsQueryable();
 
@@ -84,6 +85,7 @@ namespace CarFlipper.Controllers
             if (!string.IsNullOrEmpty(gearbox)) query = query.Where(c => c.Gearbox == gearbox);
             if (!string.IsNullOrEmpty(fuel)) query = query.Where(c => c.Fuel == fuel);
             if (!string.IsNullOrEmpty(region) && Enum.TryParse<Region>(region, out var parsedRegion)) query = query.Where(c => c.RegionId == (int)parsedRegion);
+            if (!IsUnderpriced.HasValue) query = query.Where(c => c.IsUnderpriced == IsUnderpriced);
 
             var result = await query.ToListAsync();
             return Ok(result);

@@ -159,3 +159,4 @@
 /home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/obj/Debug/net8.0/CarFlipper.API.genruntimeconfig.cache
 /home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/obj/Debug/net8.0/ref/CarFlipper.API.dll
 /home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/blockerResponse.json
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/Data/car-list.json
