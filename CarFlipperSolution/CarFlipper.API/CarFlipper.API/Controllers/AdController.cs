@@ -24,36 +24,36 @@ namespace CarFlipper.Controllers
         public async Task<IActionResult> AddCars([FromBody] List<AdDTO> ads)
         {
             if (ads == null || ads.Count == 0)
-        return BadRequest("No ads received.");
+                return BadRequest("No ads received.");
 
-        var existingIds = await _context.Ads
-            .Where(a => ads.Select(x => x.AdId).Contains(a.AdId))
-            .Select(a => a.AdId)
-            .ToListAsync();
+            var existingIds = await _context.Ads
+                .Where(a => ads.Select(x => x.AdId).Contains(a.AdId))
+                .Select(a => a.AdId)
+                .ToListAsync();
 
-        var newAdsDTO = ads.Where(a => !existingIds.Contains(a.AdId)).ToList();
+            var newAdsDTO = ads.Where(a => !existingIds.Contains(a.AdId)).ToList();
 
-        // Kör alla asynkrona mappningar
-        var mappedAds = await Task.WhenAll(newAdsDTO.Select(dto => _mappingService.MapToAd(dto)));
+            // Kör alla asynkrona mappningar
+            var mappedAds = await Task.WhenAll(newAdsDTO.Select(dto => _mappingService.MapToAd(dto)));
 
-        // Filtrera bort null
-        var newAds = mappedAds
-            .Where(ad => ad != null)
-            .ToList()!; // "!" för att kompilatorn inte ska klaga på null trots filtreringen
+            // Filtrera bort null
+            var newAds = mappedAds
+                .Where(ad => ad != null)
+                .ToList()!; // "!" för att kompilatorn inte ska klaga på null trots filtreringen
 
-        if (newAds.Count > 0)
-        {
-            await _context.Ads.AddRangeAsync(newAds);
-            await _context.SaveChangesAsync();
-        }
+            if (newAds.Count > 0)
+            {
+                await _context.Ads.AddRangeAsync(newAds);
+                await _context.SaveChangesAsync();
+            }
 
 
-        return Ok(new
-        {
-            Added = newAds.Count,
-            Skipped = ads.Count - newAds.Count,
-            Message = $"{newAds.Count} cars added, {ads.Count - newAds.Count} skipped as duplicates or invalid."
-        });
+            return Ok(new
+            {
+                Added = newAds.Count,
+                Skipped = ads.Count - newAds.Count,
+                Message = $"{newAds.Count} cars added, {ads.Count - newAds.Count} skipped as duplicates or invalid."
+            });
         }
 
 
@@ -110,6 +110,5 @@ namespace CarFlipper.Controllers
 
             return Ok(new { Message = $"Ad with AdId {adId} updated." });
         }
-
     }
 }

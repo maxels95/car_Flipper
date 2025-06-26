@@ -15,6 +15,7 @@ builder.Services.AddSingleton(parser);
 
 builder.Services.AddScoped<IAdMappingService, AdMappingService>();
 builder.Services.AddScoped<IMarketPriceService, MarketPriceService>();
+builder.Services.AddHttpClient<BlocketAuthService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
