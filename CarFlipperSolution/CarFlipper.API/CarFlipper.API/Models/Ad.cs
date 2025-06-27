@@ -44,48 +44,48 @@ namespace CarFlipper.API.Models
         public int MarketPriceId { get; set; }
         public MarketPrice? MarketPrice { get; set; }
         public bool IsUnderpriced { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
         public DateTime? RemovedAt { get; set; }
         public bool Deprecated = false;
 
-        public Ad()
-        {
+        // public Ad()
+        // {
 
-        }
+        // }
 
-        public Ad(int id,
-        int adId,
-        string title,
-        string url,
-        string source,
-        string? location,
-        int price,
-        int milage,
-        int modelYear,
-        string? fuel,
-        string? gearbox,
-        int? estimatedMarketValue,
-        bool isUnderpriced,
-        DateTime createdAt,
-        DateTime removedAt,
-        bool deprecated)
-        {
-            this.Id = id;
-            this.AdId = adId;
-            this.Title = title;
-            this.Url = url;
-            this.Source = source;
-            this.Location = location;
-            this.Price = price;
-            this.Milage = milage;
-            this.ModelYear = modelYear;
-            this.Fuel = fuel;
-            this.Gearbox = gearbox;
-            this.IsUnderpriced = isUnderpriced;
-            this.CreatedAt = createdAt;
-            this.RemovedAt = removedAt;
-            this.Deprecated = deprecated;
-        }
+        // public Ad(int id,
+        // int adId,
+        // string title,
+        // string url,
+        // string source,
+        // string? location,
+        // int price,
+        // int milage,
+        // int modelYear,
+        // string? fuel,
+        // string? gearbox,
+        // int? estimatedMarketValue,
+        // bool isUnderpriced,
+        // DateTime createdAt,
+        // DateTime removedAt,
+        // bool deprecated)
+        // {
+        //     this.Id = id;
+        //     this.AdId = adId;
+        //     this.Title = title;
+        //     this.Url = url;
+        //     this.Source = source;
+        //     this.Location = location;
+        //     this.Price = price;
+        //     this.Milage = milage;
+        //     this.ModelYear = modelYear;
+        //     this.Fuel = fuel;
+        //     this.Gearbox = gearbox;
+        //     this.IsUnderpriced = isUnderpriced;
+        //     this.CreatedAt = createdAt;
+        //     this.RemovedAt = removedAt;
+        //     this.Deprecated = deprecated;
+        // }
     }
 
 }

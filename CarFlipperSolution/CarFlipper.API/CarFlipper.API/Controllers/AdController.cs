@@ -13,46 +13,45 @@ namespace CarFlipper.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IAdMappingService _mappingService;
+        private readonly AdImportService _adImportService;
+        private readonly IMarketPriceQueue _marketPriceQueue;
 
-        public CarController(AppDbContext context, IAdMappingService mappingService)
+        public CarController(AppDbContext context, IAdMappingService mappingService,
+            AdImportService adImportService, IMarketPriceQueue marketPriceQueue)
         {
             _context = context;
             _mappingService = mappingService;
+            _adImportService = adImportService;
+            _marketPriceQueue = marketPriceQueue;
         }
 
         [HttpPost]
         public async Task<IActionResult> AddCars([FromBody] List<AdDTO> ads)
         {
-            if (ads == null || ads.Count == 0)
-                return BadRequest("No ads received.");
+            var (added, skipped) = await _adImportService.ImportAdsAsync(ads);
 
-            var existingIds = await _context.Ads
-                .Where(a => ads.Select(x => x.AdId).Contains(a.AdId))
-                .Select(a => a.AdId)
-                .ToListAsync();
-
-            var newAdsDTO = ads.Where(a => !existingIds.Contains(a.AdId)).ToList();
-
-            // Kör alla asynkrona mappningar
-            var mappedAds = await Task.WhenAll(newAdsDTO.Select(dto => _mappingService.MapToAd(dto)));
-
-            // Filtrera bort null
-            var newAds = mappedAds
-                .Where(ad => ad != null)
-                .ToList()!; // "!" för att kompilatorn inte ska klaga på null trots filtreringen
-
-            if (newAds.Count > 0)
+            if (added.Count > 0)
             {
-                await _context.Ads.AddRangeAsync(newAds);
-                await _context.SaveChangesAsync();
+                foreach (var ad in added)
+                {
+                    try
+                    {
+                        var marketPrice = await _context.MarketPrices.FirstOrDefaultAsync(mp =>
+                        mp.Id == ad.MarketPriceId);
+                        _marketPriceQueue.Enqueue(marketPrice);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fel i tiläggning av bakgrundshämtning: {ex.Message}");
+                    }
+                }
             }
-
 
             return Ok(new
             {
-                Added = newAds.Count,
-                Skipped = ads.Count - newAds.Count,
-                Message = $"{newAds.Count} cars added, {ads.Count - newAds.Count} skipped as duplicates or invalid."
+                Added = added,
+                Skipped = skipped,
+                Message = $"{added} cars added, {skipped} skipped as duplicates or invalid."
             });
         }
 
@@ -109,6 +108,18 @@ namespace CarFlipper.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = $"Ad with AdId {adId} updated." });
+        }
+        
+        [HttpDelete("reset-database")]
+        public async Task<IActionResult> ResetDatabase()
+        {
+            _context.Ads.RemoveRange(_context.Ads);
+            _context.PriceHistories.RemoveRange(_context.PriceHistories);
+            _context.MarketPrices.RemoveRange(_context.MarketPrices);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "All data deleted." });
         }
     }
 }

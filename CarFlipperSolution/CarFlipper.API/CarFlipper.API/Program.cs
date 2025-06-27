@@ -13,9 +13,22 @@ var parser = new CarParserService();
 parser.Load("Data/car-list.json");
 builder.Services.AddSingleton(parser);
 
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+
 builder.Services.AddScoped<IAdMappingService, AdMappingService>();
 builder.Services.AddScoped<IMarketPriceService, MarketPriceService>();
+builder.Services.AddScoped<AdImportService>();
+builder.Services.AddScoped<BlocketFilterService>();
+builder.Services.AddScoped<BlocketSearchService>();
 builder.Services.AddHttpClient<BlocketAuthService>();
+builder.Services.AddSingleton<IMarketPriceQueue, MarketPriceQueue>();
+builder.Services.AddHostedService(provider => (MarketPriceQueue)provider.GetRequiredService<IMarketPriceQueue>());
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

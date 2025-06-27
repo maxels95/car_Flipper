@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CarFlipper.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da07b2e1954a2c7620c3bba8f5fa8af1d7f91002")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e1d88a28ed450f99159c79209cd06d28ecac6a8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("CarFlipper.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CarFlipper.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using CarFlipper.API.Data;
 using CarFlipper.API.DTO;
 using CarFlipper.API.Enums;
@@ -54,14 +55,14 @@ public class AdMappingService : IAdMappingService
             ad.MarketPriceId = marketPrice.Id;
 
             if ((ad.Price + 10000) < marketPrice.EstimatedPrice)
-                {
-                    ad.IsUnderpriced = true;
-                }
+            {
+                ad.IsUnderpriced = true;
+            }
 
             if (Enum.TryParse<Region>(dto.Region, ignoreCase: true, out var regionEnum))
-                {
-                    ad.RegionId = (int)regionEnum;
-                }
+            {
+                ad.RegionId = (int)regionEnum;
+            }
 
             return ad;
         }
@@ -71,5 +72,38 @@ public class AdMappingService : IAdMappingService
         }
     }
     
+
+    public async Task<AdDTO?> MapToAdDTO(JsonElement jsonElement)
+    {
+        try
+        {
+            // Extract price amount and remove non-numeric characters
+            var priceString = jsonElement.GetProperty("price").GetProperty("amount").GetString();
+            priceString = priceString.Replace(" ", "").Replace("kr", "");
+            int price = int.Parse(priceString);
+
+            return new AdDTO
+            {
+                AdId = int.Parse(jsonElement.GetProperty("dealId").GetString()),
+                Title = jsonElement.GetProperty("heading").GetString(),
+                Description = jsonElement.GetProperty("description").GetString(),
+                Url = jsonElement.GetProperty("link").GetString(),
+                Source = "blocket", // Hardcoded as not in original JSON
+                Region = jsonElement.GetProperty("car").GetProperty("location").GetProperty("region").GetString(),
+                Price = price,
+                Milage = jsonElement.GetProperty("car").GetProperty("mileage").GetInt32(),
+                ModelYear = jsonElement.GetProperty("car").GetProperty("regDate").GetInt32(),
+                Fuel = jsonElement.GetProperty("car").GetProperty("fuel").GetString(),
+                Gearbox = jsonElement.GetProperty("car").GetProperty("gearbox").GetString(),
+                CreatedAt = DateTime.Parse(jsonElement.GetProperty("listTime").GetString())
+            };
+        }
+        catch (Exception ex)
+        {
+            // Handle parsing errors appropriately
+            Console.WriteLine($"Error mapping ad: {ex.Message}");
+            return null;
+        }
+    }
     
 }
