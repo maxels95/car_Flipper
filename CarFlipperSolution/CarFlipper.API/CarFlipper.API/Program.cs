@@ -27,6 +27,7 @@ builder.Services.AddScoped<AdImportService>();
 builder.Services.AddScoped<BlocketFilterService>();
 builder.Services.AddScoped<BlocketSearchService>();
 builder.Services.AddHttpClient<BlocketAuthService>();
+builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddSingleton<IMarketPriceQueue, MarketPriceQueue>();
 builder.Services.AddHostedService(provider => (MarketPriceQueue)provider.GetRequiredService<IMarketPriceQueue>());
 builder.Services.AddDbContext<AppDbContext>(options =>

@@ -1,0 +1,93 @@
+{
+  "engine_sizes": [
+    "0.6", "0.7", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", 
+    "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5", "2.7", 
+    "2.8", "2.9", "3.0", "3.2", "3.5", "3.6", "3.7", "4.0", "4.2", "4.4", 
+    "4.7", "5.0", "5.5", "6.0", "6.2"
+  ],
+  "engine_codes": {
+    "volvo": ["T3", "T4", "T5", "T6", "T8", "D2", "D3", "D4", "D5", "B3", "B4", "B5", "B6"],
+    "vw_group": [
+      "TSI", "TDI", "FSI", "SDI",
+      "1.0 TSI", "1.2 TSI", "1.4 TSI", "1.6 TDI", "1.8 TSI", "2.0 TDI", "2.0 TSI",
+      "GTI", "R", "VR6", "W8"
+    ],
+    "bmw": [
+      "N13", "N20", "N54", "N55", "B38", "B48", "B58",
+      "316i", "318i", "320i", "325i", "330i", "335i", "M3"
+    ],
+    "mercedes": [
+      "M266", "OM651", "M276",
+      "C180", "C200", "E220", "E350", "S500", "AMG 45", "AMG 63"
+    ],
+    "french": [
+      "PureTech", "BlueHDi", "THP", "HDi",
+      "1.2 PureTech", "1.6 HDi", "2.0 HDi"
+    ],
+    "japanese": [
+      "i-VTEC", "SkyActiv", "4G63", "SR20DET",
+      "1.5 i-VTEC", "2.0 SkyActiv"
+    ],
+    "american": {
+      "ford": [
+        "EcoBoost", "Power Stroke", "Triton",
+        "1.0 EcoBoost", "1.5 EcoBoost", "2.0 EcoBoost", "2.7 EcoBoost", "3.5 EcoBoost",
+        "5.0 Coyote", "7.3 Godzilla"
+      ],
+      "chevrolet": [
+        "Ecotec", "LS", "LT", "Duramax",
+        "1.4 Ecotec", "2.0 Ecotec", "2.7 Turbo", "3.6 LGX", "5.3 EcoTec3", "6.2 LT2"
+      ],
+      "dodge": [
+        "Hemi", "Pentastar", "Cummins",
+        "3.6 Pentastar", "5.7 Hemi", "6.4 Hemi", "6.7 Cummins"
+      ]
+    },
+    "korean": {
+      "hyundai": [
+        "Gamma", "Theta", "Lambda", "Smartstream",
+        "1.0 T-GDi", "1.6 Gamma", "2.0 Nu", "2.5 Smartstream", "3.3 Lambda"
+      ],
+      "kia": [
+        "U", "Theta", "Lambda",
+        "1.0 T-GDi", "1.6 GDi", "2.0 Nu", "3.3 GDi"
+      ]
+    },
+    "italian": {
+      "fiat": [
+        "FIRE", "Multijet", "T-Jet",
+        "1.2 FIRE", "1.4 T-Jet", "1.6 Multijet", "2.4 Multijet"
+      ],
+      "ferrari": [
+        "F140", "F154", "F160",
+        "3.9 TT", "6.5 V12"
+      ]
+    },
+    "diesel_common": [
+      "CDI", "dCi", "JTD", "CRD", "HDi", "TDI", "D", "TD", "D-4D", "DDiS"
+    ],
+    "performance": [
+      "M", "RS", "AMG", "GTI", "R", "V6", "V8", "V12", "WRX", "STI", "Type R", "GR"
+    ],
+    "swedish_specific": [
+      "DRIVe", "Bi-Fuel", "E85", "CNG", "Flexifuel"
+    ]
+  },
+  "special_notations": [
+    "16V", "8V", "VVT", "Turbo", "Supercharged", "Twin-Turbo", "GDi", "TFSI", "MPI",
+    "SOHC", "DOHC", "Common Rail", "Direct Injection"
+  ],
+  "metadata": {
+    "displacement_units": "liters",
+    "swedish_variants": {
+      "comma_decimal": ["1,6", "2,0", "2,4"],
+      "power_notations": ["hk", "kW", "PS"]
+    },
+    "last_updated": "2023-11-20",
+    "notes": [
+      "American V8s often omit displacement (e.g., 'Hemi' = 5.7L/6.4L)",
+      "Japanese turbo engines may use 'T' suffix (e.g., 4G63T)",
+      "German performance models use internal codes (e.g., M113 = Mercedes 5.4L V8)"
+    ]
+  }
+}

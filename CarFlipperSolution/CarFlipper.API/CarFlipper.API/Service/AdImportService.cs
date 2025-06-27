@@ -8,12 +8,15 @@ public class AdImportService
     private readonly AppDbContext _context;
     private readonly IAdMappingService _mappingService;
     private readonly IMarketPriceService _marketPriceService;
+    private readonly IMailService _mailService;
 
-    public AdImportService(AppDbContext context, IAdMappingService mappingService, IMarketPriceService marketPriceService)
+    public AdImportService(AppDbContext context, IAdMappingService mappingService,
+                        IMarketPriceService marketPriceService, IMailService mailService)
     {
         _context = context;
         _mappingService = mappingService;
         _marketPriceService = marketPriceService;
+        _mailService = mailService;
     }
 
     public async Task<(List<Ad?> added, int skipped)> ImportAdsAsync(List<AdDTO> ads)
@@ -61,6 +64,8 @@ public class AdImportService
             if ((ad.Price + 10000) < marketPrice.EstimatedPrice)
             {
                 ad.IsUnderpriced = true;
+                // Send mail with underpriced ad
+                await _mailService.SendUndervaluedAdAlertAsync(ad);
             }
         }
         

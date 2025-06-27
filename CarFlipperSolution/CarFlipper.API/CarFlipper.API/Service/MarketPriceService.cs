@@ -13,31 +13,42 @@ public class MarketPriceService : IMarketPriceService
 
     public async Task<MarketPrice> UpdateOrCreateMarketPriceAsync(Ad ad)
     {
+        // Validate input
+        if (ad == null)
+            throw new ArgumentNullException(nameof(ad));
+        
         var yearRange = GetYearRange(ad.ModelYear);
         var milageRange = GetMilageRange(ad.Milage);
 
         if (yearRange == default || milageRange == default)
-            throw new Exception("Ingen lämplig intervall hittades");
+            throw new Exception("No suitable range found");
 
+        // Find existing record
         var existing = await _context.MarketPrices.FirstOrDefaultAsync(mp =>
             mp.Make == ad.Make &&
             mp.Model == ad.Model &&
             mp.Fuel == ad.Fuel &&
+            mp.Gearbox == ad.Gearbox &&  // Added missing Gearbox check
             mp.ModelYearFrom == yearRange.Start &&
             mp.ModelYearTo == yearRange.End &&
             mp.MilageFrom == milageRange.Start &&
-            mp.MilageTo == milageRange.End
-        );
+            mp.MilageTo == milageRange.End);
 
-        if (existing != null && (ad.Price + 10000) < existing.EstimatedPrice)
+        // Case 1: Existing record meets update condition
+        if (existing != null)
         {
-            existing.EstimatedPrice = ((existing.EstimatedPrice * existing.SampleSize) + ad.Price) / (existing.SampleSize + 1);
-            existing.SampleSize++;
-            existing.UpdatedAt = DateTime.Now.ToUniversalTime();
+            if ((ad.Price + 10000) > existing.EstimatedPrice)
+            {
+                existing.EstimatedPrice = ((existing.EstimatedPrice * existing.SampleSize) + ad.Price) / (existing.SampleSize + 1);
+                existing.SampleSize++;
+                existing.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+            return existing;
         }
         else
         {
-            existing = new MarketPrice
+            var newMarketPrice = new MarketPrice
             {
                 Make = ad.Make,
                 Model = ad.Model,
@@ -51,13 +62,11 @@ public class MarketPriceService : IMarketPriceService
                 SampleSize = 1
             };
 
-            _context.MarketPrices.Add(existing);
+            _context.MarketPrices.Add(newMarketPrice);
+            await _context.SaveChangesAsync();
+            return newMarketPrice;
         }
-
-        await _context.SaveChangesAsync();
-        return existing;
     }
-
 
     private (int Start, int End) GetYearRange(int year)
     {

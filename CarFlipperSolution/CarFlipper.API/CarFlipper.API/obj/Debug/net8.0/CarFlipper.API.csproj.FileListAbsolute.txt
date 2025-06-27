@@ -160,3 +160,10 @@
 /home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/obj/Debug/net8.0/ref/CarFlipper.API.dll
 /home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/blockerResponse.json
 /home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/Data/car-list.json
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/Data/engine-list.json
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/BouncyCastle.Cryptography.dll
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/MailKit.dll
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/MimeKit.dll
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/System.Formats.Asn1.dll
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/System.Security.Cryptography.Pkcs.dll
+/home/mikael/Desktop/Projects/car_Flipper/CarFlipperSolution/CarFlipper.API/CarFlipper.API/bin/Debug/net8.0/runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll

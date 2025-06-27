@@ -9,12 +9,15 @@ public class AdMappingService : IAdMappingService
 {
     private readonly CarParserService _parser;
     private readonly IMarketPriceService _marketPriceService;
+    private readonly IMailService _mailService;
     private readonly AppDbContext _context;
 
-    public AdMappingService(AppDbContext context, IMarketPriceService marketPriceService, CarParserService parser)
+    public AdMappingService(AppDbContext context, IMarketPriceService marketPriceService,
+                            CarParserService parser, IMailService mailService)
     {
         _parser = parser;
         _marketPriceService = marketPriceService;
+        _mailService = mailService;
         _context = context;
     }
 
@@ -57,6 +60,8 @@ public class AdMappingService : IAdMappingService
             if ((ad.Price + 10000) < marketPrice.EstimatedPrice)
             {
                 ad.IsUnderpriced = true;
+                // Send mail with underpriced ad
+                await _mailService.SendUndervaluedAdAlertAsync(ad);
             }
 
             if (Enum.TryParse<Region>(dto.Region, ignoreCase: true, out var regionEnum))
