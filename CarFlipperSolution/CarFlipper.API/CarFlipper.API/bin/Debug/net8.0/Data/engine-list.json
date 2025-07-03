@@ -1,93 +1,53 @@
 {
   "engine_sizes": [
     "0.6", "0.7", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", 
-    "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5", "2.7", 
-    "2.8", "2.9", "3.0", "3.2", "3.5", "3.6", "3.7", "4.0", "4.2", "4.4", 
-    "4.7", "5.0", "5.5", "6.0", "6.2"
+    "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6",
+    "2.7", "2.8", "2.9", "3.0", "3.2", "3.3", "3.5", "3.6", "3.7", "3.8",
+    "4.0", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.0", "5.2",
+    "5.5", "5.7", "6.0", "6.2", "6.5", "6.7", "7.0", "7.3", "7.4", "8.0"
   ],
   "engine_codes": {
     "volvo": ["T3", "T4", "T5", "T6", "T8", "D2", "D3", "D4", "D5", "B3", "B4", "B5", "B6"],
-    "vw_group": [
-      "TSI", "TDI", "FSI", "SDI",
-      "1.0 TSI", "1.2 TSI", "1.4 TSI", "1.6 TDI", "1.8 TSI", "2.0 TDI", "2.0 TSI",
-      "GTI", "R", "VR6", "W8"
-    ],
-    "bmw": [
-      "N13", "N20", "N54", "N55", "B38", "B48", "B58",
-      "316i", "318i", "320i", "325i", "330i", "335i", "M3"
-    ],
-    "mercedes": [
-      "M266", "OM651", "M276",
-      "C180", "C200", "E220", "E350", "S500", "AMG 45", "AMG 63"
-    ],
-    "french": [
-      "PureTech", "BlueHDi", "THP", "HDi",
-      "1.2 PureTech", "1.6 HDi", "2.0 HDi"
-    ],
-    "japanese": [
-      "i-VTEC", "SkyActiv", "4G63", "SR20DET",
-      "1.5 i-VTEC", "2.0 SkyActiv"
-    ],
-    "american": {
-      "ford": [
-        "EcoBoost", "Power Stroke", "Triton",
-        "1.0 EcoBoost", "1.5 EcoBoost", "2.0 EcoBoost", "2.7 EcoBoost", "3.5 EcoBoost",
-        "5.0 Coyote", "7.3 Godzilla"
-      ],
-      "chevrolet": [
-        "Ecotec", "LS", "LT", "Duramax",
-        "1.4 Ecotec", "2.0 Ecotec", "2.7 Turbo", "3.6 LGX", "5.3 EcoTec3", "6.2 LT2"
-      ],
-      "dodge": [
-        "Hemi", "Pentastar", "Cummins",
-        "3.6 Pentastar", "5.7 Hemi", "6.4 Hemi", "6.7 Cummins"
-      ]
-    },
-    "korean": {
-      "hyundai": [
-        "Gamma", "Theta", "Lambda", "Smartstream",
-        "1.0 T-GDi", "1.6 Gamma", "2.0 Nu", "2.5 Smartstream", "3.3 Lambda"
-      ],
-      "kia": [
-        "U", "Theta", "Lambda",
-        "1.0 T-GDi", "1.6 GDi", "2.0 Nu", "3.3 GDi"
-      ]
-    },
-    "italian": {
-      "fiat": [
-        "FIRE", "Multijet", "T-Jet",
-        "1.2 FIRE", "1.4 T-Jet", "1.6 Multijet", "2.4 Multijet"
-      ],
-      "ferrari": [
-        "F140", "F154", "F160",
-        "3.9 TT", "6.5 V12"
-      ]
-    },
-    "diesel_common": [
-      "CDI", "dCi", "JTD", "CRD", "HDi", "TDI", "D", "TD", "D-4D", "DDiS"
-    ],
-    "performance": [
-      "M", "RS", "AMG", "GTI", "R", "V6", "V8", "V12", "WRX", "STI", "Type R", "GR"
-    ],
-    "swedish_specific": [
-      "DRIVe", "Bi-Fuel", "E85", "CNG", "Flexifuel"
-    ]
+    "saab": ["B202", "B204", "B205", "B206", "B207", "B212", "B234", "B235", "B284", "B308", "2.0t", "2.3T", "2.8T V6"],
+    "volkswagen": ["TSI", "TDI", "FSI", "1.0 TSI", "1.4 TSI", "2.0 TSI", "1.6 TDI", "2.0 TDI", "GTI", "R", "VR6"],
+    "audi": ["TFSI", "TDI", "1.8T", "2.0T", "3.0T", "4.2 FSI", "5.2 V10", "RS", "S"],
+    "bmw": ["N13", "N20", "B48", "B58", "S55", "316i", "320i", "330i", "M3", "M5"],
+    "mercedes": ["M266", "OM651", "C180", "E220", "S500", "AMG 45", "AMG 63"],
+    "peugeot": ["PureTech", "1.2 PureTech", "1.6 THP", "2.0 HDi", "BlueHDi"],
+    "renault": ["Energy", "TCe", "dCi", "1.5 dCi", "2.0 dCi"],
+    "citroen": ["PureTech", "HDi", "1.6 HDi", "2.0 HDi"],
+    "ford": ["EcoBoost", "1.0 EcoBoost", "2.0 EcoBoost", "5.0 Coyote", "Power Stroke"],
+    "chevrolet": ["Ecotec", "1.4 Ecotec", "2.0 Ecotec", "5.3 EcoTec3", "6.2 LT2"],
+    "dodge": ["Hemi", "3.6 Pentastar", "5.7 Hemi", "6.4 Hemi"],
+    "toyota": ["1NZ", "2ZR", "1.5 Hybrid", "2.0 Dynamic Force", "3.5 V6", "GR"],
+    "honda": ["i-VTEC", "1.5 i-VTEC", "2.0 i-VTEC", "K20", "Type R"],
+    "nissan": ["HR", "MR", "1.6 DIG-T", "2.0 Turbo", "3.5 VQ", "GT-R"],
+    "mazda": ["SkyActiv", "1.5 SkyActiv", "2.0 SkyActiv", "2.5 Turbo"],
+    "subaru": ["Boxer", "FB", "EJ", "2.0 Turbo", "2.5 Turbo", "STI"],
+    "hyundai": ["Gamma", "1.6 Gamma", "2.0 Nu", "1.6 T-GDi", "2.5 Smartstream"],
+    "kia": ["U", "1.6 GDi", "2.0 Nu", "1.6 T-GDi", "3.3 GDi"],
+    "jaguar": ["Ingenium", "2.0 Ingenium", "3.0 V6", "5.0 V8"],
+    "land_rover": ["Ingenium", "2.0 Ingenium", "3.0 TDV6", "5.0 V8"],
+    "porsche": ["2.0T", "3.0T", "4.0 Flat-6", "Turbo", "GT3"],
+    "ferrari": ["3.9 TT", "4.5 V8", "6.5 V12"],
+    "lamborghini": ["5.2 V10", "6.5 V12"],
+    "fiat": ["FIRE", "1.2 FIRE", "1.4 T-Jet", "1.6 Multijet"],
+    "alfa_romeo": ["JTS", "1.4 TB", "1.8 TBI", "2.0 Turbo", "Quadrifoglio"],
+    "tesla": ["Electric", "Plaid", "Performance"],
+    "lexus": ["2.5 Hybrid", "3.5 V6", "5.0 V8", "F"]
   },
   "special_notations": [
-    "16V", "8V", "VVT", "Turbo", "Supercharged", "Twin-Turbo", "GDi", "TFSI", "MPI",
-    "SOHC", "DOHC", "Common Rail", "Direct Injection"
+    "16V", "Turbo", "Supercharged", "Twin-Turbo", 
+    "GDi", "TFSI", "Common Rail", "Direct Injection",
+    "Hybrid", "PHEV", "Mild Hybrid", "Electric"
   ],
   "metadata": {
     "displacement_units": "liters",
-    "swedish_variants": {
-      "comma_decimal": ["1,6", "2,0", "2,4"],
-      "power_notations": ["hk", "kW", "PS"]
-    },
-    "last_updated": "2023-11-20",
+    "last_updated": "2023-11-25",
     "notes": [
-      "American V8s often omit displacement (e.g., 'Hemi' = 5.7L/6.4L)",
-      "Japanese turbo engines may use 'T' suffix (e.g., 4G63T)",
-      "German performance models use internal codes (e.g., M113 = Mercedes 5.4L V8)"
+      "Engine codes may vary by market and model year",
+      "Turbocharged engines often marked with 'T' or 'Turbo'",
+      "Hybrid systems typically combine engine code with 'Hybrid'"
     ]
   }
 }

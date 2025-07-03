@@ -6,4 +6,5 @@ public interface IAdMappingService
 {
     Task<Ad?> MapToAd(AdDTO dto);
     Task<AdDTO?> MapToAdDTO(JsonElement jsonElement);
+    List<string> GetRelevantEnginesForAd(Ad ad);
 }

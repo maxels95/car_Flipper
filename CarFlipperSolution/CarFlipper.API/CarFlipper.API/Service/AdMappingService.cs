@@ -3,21 +3,20 @@ using CarFlipper.API.Data;
 using CarFlipper.API.DTO;
 using CarFlipper.API.Enums;
 using CarFlipper.API.Models;
+using CarFlipper.API.Services;
 using Microsoft.EntityFrameworkCore;
 
 public class AdMappingService : IAdMappingService
 {
     private readonly CarParserService _parser;
-    private readonly IMarketPriceService _marketPriceService;
-    private readonly IMailService _mailService;
+    private readonly IEngineParser _engineParser;
     private readonly AppDbContext _context;
 
-    public AdMappingService(AppDbContext context, IMarketPriceService marketPriceService,
-                            CarParserService parser, IMailService mailService)
+    public AdMappingService(CarParserService parser, IEngineParser engineParser,
+                            AppDbContext context)
     {
         _parser = parser;
-        _marketPriceService = marketPriceService;
-        _mailService = mailService;
+        _engineParser = engineParser;
         _context = context;
     }
 
@@ -30,7 +29,6 @@ public class AdMappingService : IAdMappingService
             {
                 (make, model) = _parser.ParseMakeAndModel(dto.Description);
             }
-
 
             if (make == null || model == null)
                 return null; // Kan ej tolkas
@@ -54,15 +52,9 @@ public class AdMappingService : IAdMappingService
                 Deprecated = false
             };
 
-            var marketPrice = await _marketPriceService.UpdateOrCreateMarketPriceAsync(ad);
-            ad.MarketPriceId = marketPrice.Id;
-
-            if ((ad.Price + 10000) < marketPrice.EstimatedPrice)
-            {
-                ad.IsUnderpriced = true;
-                // Send mail with underpriced ad
-                await _mailService.SendUndervaluedAdAlertAsync(ad);
-            }
+            var engineOptions = GetRelevantEnginesForAd(ad);
+            var engine = _engineParser.ParseEngine(ad.Title, ad.Description, ad.Make, engineOptions);
+            ad.Engine = engine;
 
             if (Enum.TryParse<Region>(dto.Region, ignoreCase: true, out var regionEnum))
             {
@@ -111,4 +103,16 @@ public class AdMappingService : IAdMappingService
         }
     }
     
+    public List<string> GetRelevantEnginesForAd(Ad ad)
+    {
+        return _context.MarketPrices
+            .Where(mp =>
+                mp.Make == ad.Make &&
+                mp.Model == ad.Model &&
+                mp.Fuel == ad.Fuel)
+            .Select(mp => mp.Engine)
+            .Where(e => !string.IsNullOrEmpty(e))
+            .Distinct()
+            .ToList();
+    }
 }

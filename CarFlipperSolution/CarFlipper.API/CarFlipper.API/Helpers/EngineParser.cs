@@ -1,40 +1,106 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using CarFlipper.API.Data;
+using CarFlipper.API.Models;
 
 public class EngineData
 {
+    [JsonPropertyName("engine_sizes")]
     public List<string> EngineSizes { get; set; } = new();
-    public List<string> EngineCodes { get; set; } = new();
+
+    [JsonPropertyName("engine_codes")]
+    public Dictionary<string, List<string>> EngineCodes { get; set; } = new();
+
+    [JsonPropertyName("special_notations")]
+    public List<string> SpecialNotations { get; set; } = new();
 }
 
-public static class EngineParser
+public class EngineParser : IEngineParser
 {
-    private static EngineData? _engineData;
+    private EngineData? _engineData;
 
-    public static void LoadFromJson(string filePath)
+    public void LoadFromJson(string filePath)
     {
-        var json = File.ReadAllText(filePath);
-        _engineData = JsonSerializer.Deserialize<EngineData>(json);
+        try
+        {
+            Console.WriteLine($"🔍 Försöker läsa motorfil från: {filePath}");
+
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("❌ Filen hittades inte!");
+                return;
+            }
+
+            var json = File.ReadAllText(filePath);
+            _engineData = JsonSerializer.Deserialize<EngineData>(json);
+
+            if (_engineData == null)
+            {
+                Console.WriteLine("❌ Deserialisering misslyckades – kontrollera JSON-format.");
+            }
+            else
+            {
+                Console.WriteLine($"✅ Motorfil laddad med {_engineData.EngineSizes.Count} storlekar.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Fel vid laddning av motorfil: {ex.Message}");
+        }
     }
 
-    public static string? ParseEngine(string title)
+
+    public string? ParseEngine(string title, string description, string make, List<string> allowedEngines)
     {
-        if (string.IsNullOrEmpty(title) || _engineData == null)
+        if (_engineData == null)
             return null;
 
-        var titleLower = title.ToLowerInvariant();
+        var textSources = new[] { title ?? "", description ?? "" };
+        var makeKey = NormalizeMake(make);
+        var allowedSet = allowedEngines?
+            .Select(e => e.ToLowerInvariant())
+            .ToHashSet() ?? new HashSet<string>();
 
-        foreach (var size in _engineData.EngineSizes)
+        List<string> matchedEngines = new();
+
+        if (_engineData.EngineCodes.TryGetValue(makeKey, out var codesForMake))
         {
-            if (titleLower.Contains(size.ToLowerInvariant()) || titleLower.Contains(size.Replace(".", ",")))
-                return size;
+            foreach (var code in codesForMake)
+            {
+                var codeLower = code.ToLowerInvariant();
+
+                foreach (var text in textSources)
+                {
+                    if (text.ToLowerInvariant().Contains(codeLower))
+                    {
+                        matchedEngines.Add(code.ToUpper());
+                    }
+                }
+            }
         }
 
-        foreach (var code in _engineData.EngineCodes)
+        // 1. Om vi har flera matchningar, välj en som finns i allowedEngines
+        if (matchedEngines.Count > 0)
         {
-            if (titleLower.Contains(code.ToLowerInvariant()))
-                return code.ToUpper(); // För konsekvens
+            var preferred = matchedEngines.FirstOrDefault(m => allowedSet.Contains(m.ToLowerInvariant()));
+            return preferred ?? matchedEngines.First(); // prioritera known, annars första matchen
+        }
+
+        // 2. Motorstorlek fallback
+        foreach (var size in _engineData.EngineSizes)
+        {
+            foreach (var text in textSources)
+            {
+                if (text.Contains(size) || text.Contains(size.Replace(".", ",")))
+                    return size.Replace(",", ".");
+            }
         }
 
         return null;
+    }
+
+    private static string NormalizeMake(string make)
+    {
+        return make.ToLowerInvariant().Replace(" ", "_");
     }
 }

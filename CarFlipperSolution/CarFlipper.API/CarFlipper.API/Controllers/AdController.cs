@@ -12,17 +12,17 @@ namespace CarFlipper.Controllers
     public class CarController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IAdMappingService _mappingService;
         private readonly AdImportService _adImportService;
         private readonly IMarketPriceQueue _marketPriceQueue;
+        private readonly MailService _mailService;
 
-        public CarController(AppDbContext context, IAdMappingService mappingService,
-            AdImportService adImportService, IMarketPriceQueue marketPriceQueue)
+        public CarController(AppDbContext context, AdImportService adImportService,
+        IMarketPriceQueue marketPriceQueue, MailService mailService)
         {
             _context = context;
-            _mappingService = mappingService;
             _adImportService = adImportService;
             _marketPriceQueue = marketPriceQueue;
+            _mailService = mailService;
         }
 
         [HttpPost]
@@ -34,6 +34,19 @@ namespace CarFlipper.Controllers
             {
                 foreach (var ad in added)
                 {
+
+                    try
+                    {
+                        if (ad.IsUnderpriced)
+                        {
+                            _mailService.SendUndervaluedAdAlertAsync(ad);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fel vid försök att skicka mail: {ex.Message}");
+                    }
+
                     try
                     {
                         var marketPrice = await _context.MarketPrices.FirstOrDefaultAsync(mp =>

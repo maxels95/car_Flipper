@@ -14,6 +14,7 @@ public class MarketPrice
 
     public string Fuel { get; set; }
     public string Gearbox { get; set; }
+    public string? Engine { get; set; }
 
     public int EstimatedPrice { get; set; }
     public int SampleSize { get; set; }  // antal annonser som beräkningen baseras på

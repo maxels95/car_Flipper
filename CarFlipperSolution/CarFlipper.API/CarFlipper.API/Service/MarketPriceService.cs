@@ -11,62 +11,89 @@ public class MarketPriceService : IMarketPriceService
         _context = context;
     }
 
-    public async Task<MarketPrice> UpdateOrCreateMarketPriceAsync(Ad ad)
+    public async Task<MarketPrice?> UpdateOrCreateMarketPriceAsync(Ad ad)
+{
+    if (ad == null)
+        throw new ArgumentNullException(nameof(ad));
+
+    var yearRange = GetYearRange(ad.ModelYear);
+    var milageRange = GetMilageRange(ad.Milage);
+
+    if (yearRange == default || milageRange == default)
+        throw new Exception("No suitable range found");
+
+    // Fall A – ENGINE MISSING ➜ Do not create anything, just return closest existing
+    if (string.IsNullOrWhiteSpace(ad.Engine))
     {
-        // Validate input
-        if (ad == null)
-            throw new ArgumentNullException(nameof(ad));
-        
-        var yearRange = GetYearRange(ad.ModelYear);
-        var milageRange = GetMilageRange(ad.Milage);
+        var candidates = await _context.MarketPrices
+            .Where(mp =>
+                mp.Make == ad.Make &&
+                mp.Model == ad.Model &&
+                mp.Fuel == ad.Fuel &&
+                mp.Gearbox == ad.Gearbox &&
+                mp.ModelYearFrom == yearRange.Start &&
+                mp.ModelYearTo == yearRange.End &&
+                mp.MilageFrom == milageRange.Start &&
+                mp.MilageTo == milageRange.End)
+            .ToListAsync();
 
-        if (yearRange == default || milageRange == default)
-            throw new Exception("No suitable range found");
+        if (candidates.Count == 0)
+            return null; // No match found
 
-        // Find existing record
-        var existing = await _context.MarketPrices.FirstOrDefaultAsync(mp =>
-            mp.Make == ad.Make &&
-            mp.Model == ad.Model &&
-            mp.Fuel == ad.Fuel &&
-            mp.Gearbox == ad.Gearbox &&  // Added missing Gearbox check
-            mp.ModelYearFrom == yearRange.Start &&
-            mp.ModelYearTo == yearRange.End &&
-            mp.MilageFrom == milageRange.Start &&
-            mp.MilageTo == milageRange.End);
+        var avg = candidates.Average(mp => mp.EstimatedPrice);
+        var closest = candidates.OrderBy(mp => Math.Abs(mp.EstimatedPrice - avg)).First();
 
-        // Case 1: Existing record meets update condition
-        if (existing != null)
-        {
-            if ((ad.Price + 10000) > existing.EstimatedPrice)
-            {
-                existing.EstimatedPrice = ((existing.EstimatedPrice * existing.SampleSize) + ad.Price) / (existing.SampleSize + 1);
-                existing.SampleSize++;
-                existing.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-            }
-            return existing;
-        }
-        else
-        {
-            var newMarketPrice = new MarketPrice
-            {
-                Make = ad.Make,
-                Model = ad.Model,
-                Fuel = ad.Fuel,
-                Gearbox = ad.Gearbox,
-                ModelYearFrom = yearRange.Start,
-                ModelYearTo = yearRange.End,
-                MilageFrom = milageRange.Start,
-                MilageTo = milageRange.End,
-                EstimatedPrice = ad.Price,
-                SampleSize = 1
-            };
-
-            _context.MarketPrices.Add(newMarketPrice);
-            await _context.SaveChangesAsync();
-            return newMarketPrice;
-        }
+        return closest; // For comparison, not updating
     }
+
+    // Fall B – ENGINE EXISTS ➜ normal flow
+    var existing = await _context.MarketPrices.FirstOrDefaultAsync(mp =>
+        mp.Make == ad.Make &&
+        mp.Model == ad.Model &&
+        mp.Fuel == ad.Fuel &&
+        mp.Gearbox == ad.Gearbox &&
+        mp.ModelYearFrom == yearRange.Start &&
+        mp.ModelYearTo == yearRange.End &&
+        mp.MilageFrom == milageRange.Start &&
+        mp.MilageTo == milageRange.End &&
+        mp.Engine == ad.Engine);
+
+    if (existing != null)
+    {
+        if ((ad.Price + 10000) > existing.EstimatedPrice)
+        {
+            existing.EstimatedPrice = ((existing.EstimatedPrice * existing.SampleSize) + ad.Price) / (existing.SampleSize + 1);
+            existing.SampleSize++;
+            existing.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+
+        return existing;
+    }
+    else
+    {
+        var newMarketPrice = new MarketPrice
+        {
+            Make = ad.Make,
+            Model = ad.Model,
+            Fuel = ad.Fuel,
+            Gearbox = ad.Gearbox,
+            ModelYearFrom = yearRange.Start,
+            ModelYearTo = yearRange.End,
+            MilageFrom = milageRange.Start,
+            MilageTo = milageRange.End,
+            EstimatedPrice = ad.Price,
+            SampleSize = 1,
+            Engine = ad.Engine,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.MarketPrices.Add(newMarketPrice);
+        await _context.SaveChangesAsync();
+        return newMarketPrice;
+    }
+}
+
 
     private (int Start, int End) GetYearRange(int year)
     {

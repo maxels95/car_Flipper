@@ -45,6 +45,8 @@ public class MarketPriceQueue : BackgroundService, IMarketPriceQueue
             var searchService = scope.ServiceProvider.GetRequiredService<BlocketSearchService>();
             var importService = scope.ServiceProvider.GetRequiredService<AdImportService>();
             var filterService = scope.ServiceProvider.GetRequiredService<BlocketFilterService>();
+            var engineParser = scope.ServiceProvider.GetRequiredService<IEngineParser>();
+            var adMappingService = scope.ServiceProvider.GetRequiredService<IAdMappingService>();
 
             var filters = GenerateFiltersFromMarketPrice(mp);
 
@@ -54,6 +56,15 @@ public class MarketPriceQueue : BackgroundService, IMarketPriceQueue
                 {
                     var query = filterService.BuildUrlQueryFromFilter(filter);
                     var ads = await searchService.SearchSimilarAdsAsync(mp);
+
+                    foreach (var ad in ads)
+                    {
+                        if (string.IsNullOrWhiteSpace(ad.Engine))
+                        {
+                            var allowedEngines = adMappingService.GetRelevantEnginesForAd(ad);
+                            ad.Engine = engineParser.ParseEngine(ad.Title, ad.Description, ad.Make, allowedEngines);
+                        }
+                    }
 
                     await importService.ImportAdsAsync(ads);
 

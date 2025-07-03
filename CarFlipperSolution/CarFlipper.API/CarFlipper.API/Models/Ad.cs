@@ -41,7 +41,7 @@ namespace CarFlipper.API.Models
         public int ModelYear { get; set; }
         public string? Fuel { get; set; }
         public string? Gearbox { get; set; }
-        public int MarketPriceId { get; set; }
+        public int? MarketPriceId { get; set; }
         public MarketPrice? MarketPrice { get; set; }
         public bool IsUnderpriced { get; set; } = false;
         public DateTime CreatedAt { get; set; }

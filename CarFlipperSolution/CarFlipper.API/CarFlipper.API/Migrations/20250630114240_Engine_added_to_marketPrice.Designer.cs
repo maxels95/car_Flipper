@@ -3,6 +3,7 @@ using System;
 using CarFlipper.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarFlipper.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250630114240_Engine_added_to_marketPrice")]
+    partial class Engine_added_to_marketPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.5");
@@ -52,7 +55,7 @@ namespace CarFlipper.API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("MarketPriceId")
+                    b.Property<int>("MarketPriceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Milage")
@@ -180,7 +183,8 @@ namespace CarFlipper.API.Migrations
                     b.HasOne("MarketPrice", "MarketPrice")
                         .WithMany("Ads")
                         .HasForeignKey("MarketPriceId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("MarketPrice");
                 });

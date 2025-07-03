@@ -1,5 +1,8 @@
+using System.Text.Json;
 using CarFlipper.API.Data;
+using CarFlipper.API.Services;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,13 @@ builder.Services.AddSwaggerGen();
 var parser = new CarParserService();
 parser.Load("Data/car-list.json");
 builder.Services.AddSingleton(parser);
+
+var engineParser = new EngineParser();
+engineParser.LoadFromJson("Data/engine-list.json");
+builder.Services.AddSingleton<IEngineParser>(engineParser);  // Register as IEngineParser
+// builder.Services.AddSingleton<IEngineParser, EngineParser>();
+
+
 
 builder.Services
     .AddControllers()
@@ -28,6 +38,8 @@ builder.Services.AddScoped<BlocketFilterService>();
 builder.Services.AddScoped<BlocketSearchService>();
 builder.Services.AddHttpClient<BlocketAuthService>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<AdEvaluationService>();
+builder.Services.AddScoped<MailService>();
 builder.Services.AddSingleton<IMarketPriceQueue, MarketPriceQueue>();
 builder.Services.AddHostedService(provider => (MarketPriceQueue)provider.GetRequiredService<IMarketPriceQueue>());
 builder.Services.AddDbContext<AppDbContext>(options =>
